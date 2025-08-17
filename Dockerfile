@@ -28,6 +28,9 @@ WORKDIR /var/www/html
 # Copy application files
 COPY . .
 
+# Copy production environment file
+COPY .env.production .env
+
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
@@ -46,36 +49,15 @@ RUN chown -R www-data:www-data /var/www/html \
 # Enable Apache mod_rewrite
 RUN a2enmod rewrite
 
-# Copy Apache configuration
-COPY <<EOF /etc/apache2/sites-available/000-default.conf
-<VirtualHost *:80>
-    DocumentRoot /var/www/html/public
-    
-    <Directory /var/www/html/public>
-        AllowOverride All
-        Require all granted
-    </Directory>
-    
-    ErrorLog \${APACHE_LOG_DIR}/error.log
-    CustomLog \${APACHE_LOG_DIR}/access.log combined
-</VirtualHost>
-EOF
+# Configure Apache DocumentRoot to point to Laravel's public directory
+RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
-# Expose port 80 (Render will map this to the PORT env var)
+# Create .htaccess in public directory if it doesn't exist
+RUN echo "RewriteEngine On\nRewriteCond %{REQUEST_FILENAME} !-d\nRewriteCond %{REQUEST_FILENAME} !-f\nRewriteRule ^ index.php [L]" > /var/www/html/public/.htaccess
+
+# Expose port 80
 EXPOSE 80
 
-# Create a startup script that handles the PORT env variable
-COPY <<EOF /usr/local/bin/start.sh
-#!/bin/bash
-# If PORT is set, configure Apache to use it
-if [ ! -z "\$PORT" ]; then
-    sed -i "s/80/\$PORT/g" /etc/apache2/sites-available/000-default.conf
-    sed -i "s/Listen 80/Listen \$PORT/g" /etc/apache2/ports.conf
-fi
-exec apache2-foreground
-EOF
-
-RUN chmod +x /usr/local/bin/start.sh
-
-# Start with our custom script
-CMD ["/usr/local/bin/start.sh"]
+# Start Apache in foreground
+CMD ["apache2-foreground"]
