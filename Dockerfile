@@ -61,8 +61,21 @@ COPY <<EOF /etc/apache2/sites-available/000-default.conf
 </VirtualHost>
 EOF
 
-# Expose port 80
+# Expose port 80 (Render will map this to the PORT env var)
 EXPOSE 80
 
-# Start Apache
-CMD ["apache2-foreground"]
+# Create a startup script that handles the PORT env variable
+COPY <<EOF /usr/local/bin/start.sh
+#!/bin/bash
+# If PORT is set, configure Apache to use it
+if [ ! -z "\$PORT" ]; then
+    sed -i "s/80/\$PORT/g" /etc/apache2/sites-available/000-default.conf
+    sed -i "s/Listen 80/Listen \$PORT/g" /etc/apache2/ports.conf
+fi
+exec apache2-foreground
+EOF
+
+RUN chmod +x /usr/local/bin/start.sh
+
+# Start with our custom script
+CMD ["/usr/local/bin/start.sh"]
