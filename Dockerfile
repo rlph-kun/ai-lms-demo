@@ -1,5 +1,5 @@
-# Use official PHP image with Apache
-FROM php:8.2-apache
+# Use official PHP image
+FROM php:8.2-cli
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -42,22 +42,10 @@ RUN php artisan key:generate --force
 RUN php artisan migrate --force
 
 # Set permissions
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html/storage \
-    && chmod -R 755 /var/www/html/bootstrap/cache
+RUN chmod -R 755 storage bootstrap/cache
 
-# Enable Apache mod_rewrite
-RUN a2enmod rewrite
+# Expose port (Render will provide PORT env var)
+EXPOSE 8080
 
-# Configure Apache DocumentRoot to point to Laravel's public directory
-RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
-RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
-
-# Create .htaccess in public directory if it doesn't exist
-RUN echo "RewriteEngine On\nRewriteCond %{REQUEST_FILENAME} !-d\nRewriteCond %{REQUEST_FILENAME} !-f\nRewriteRule ^ index.php [L]" > /var/www/html/public/.htaccess
-
-# Expose port 80
-EXPOSE 80
-
-# Start Apache in foreground
-CMD ["apache2-foreground"]
+# Start PHP built-in server
+CMD php artisan serve --host=0.0.0.0 --port=${PORT:-8080}
