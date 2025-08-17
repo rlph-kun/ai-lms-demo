@@ -1,0 +1,168 @@
+/* Mobile-First Responsive Enhancements */
+
+/* Touch-friendly interactions */
+@media (hover: none) and (pointer: coarse) {
+    /* Mobile devices */
+    .hover\:shadow-md:hover {
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+    
+    button, .button, a[role="button"] {
+        min-height: 44px; /* Apple's recommended minimum touch target */
+        min-width: 44px;
+    }
+}
+
+/* Improved scrolling on mobile */
+.overflow-y-auto {
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Better text selection on mobile */
+.select-none {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Mobile-specific adjustments */
+@media (max-width: 640px) {
+    /* Reduce shadow intensity on small screens */
+    .shadow-xl {
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+    }
+    
+    /* Better spacing for mobile cards */
+    .card-mobile {
+        margin-bottom: 1rem;
+        border-radius: 0.75rem;
+    }
+    
+    /* Ensure proper text wrapping */
+    .truncate-mobile {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+
+/* Tablet-specific adjustments */
+@media (min-width: 641px) and (max-width: 1024px) {
+    /* Optimize for tablet layouts */
+    .tablet-grid-cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    
+    .tablet-grid-cols-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+/* Desktop and large screen optimizations */
+@media (min-width: 1025px) {
+    /* Better hover states for desktop */
+    .desktop-hover-scale:hover {
+        transform: scale(1.02);
+        transition: transform 0.2s ease-in-out;
+    }
+}
+
+/* Print styles */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    
+    .print-break-inside-avoid {
+        break-inside: avoid;
+    }
+    
+    body {
+        background: white;
+        color: black;
+    }
+    
+    .bg-gradient-to-br,
+    .bg-gradient-to-r {
+        background: white !important;
+        color: black !important;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .border-gray-100 {
+        border-color: #6b7280;
+    }
+    
+    .text-gray-600 {
+        color: #374151;
+    }
+    
+    .bg-gray-50 {
+        background-color: #f9fafb;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* Dark mode support preparation */
+@media (prefers-color-scheme: dark) {
+    /* Add dark mode styles when needed */
+    .dark-mode-ready {
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+}
+
+/* Focus management for accessibility */
+.focus-visible:focus {
+    outline: 2px solid #8b5cf6;
+    outline-offset: 2px;
+}
+
+/* Better loading states */
+.loading-skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* Improved form inputs for mobile */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+select,
+textarea {
+    font-size: 16px; /* Prevents zoom on iOS */
+}
+
+@media (max-width: 640px) {
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    select,
+    textarea {
+        padding: 0.75rem;
+        border-radius: 0.5rem;
+    }
+}
